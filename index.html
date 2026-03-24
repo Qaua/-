@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+<html lang="mn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Халал Ресторан</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#1a6b3c;--green2:#0f4a28;--green3:#e8f5ee;
+  --gold:#c9a84c;--gold2:#a07828;
+  --dark:#0d1f14;--cream:#faf8f3;--white:#ffffff;
+  --gray:#f0ede6;--text:#1a1a1a;--muted:#888;--border:#e8e2d8;
+}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.view{display:none}
+.view.on{display:block}
+
+/* ═══════════════════════════════════
+CUSTOMER MENU
+═══════════════════════════════════ */
+#v-menu{background:var(–cream);min-height:100vh}
+
+/* Header */
+.menu-hero{background:linear-gradient(160deg,var(–green2) 0%,var(–green) 60%,#2d8a55 100%);padding:36px 20px 28px;text-align:center;position:relative;overflow:hidden}
+.menu-hero::before{content:’’;position:absolute;inset:0;background:url(“data:image/svg+xml,%3Csvg width=‘60’ height=‘60’ viewBox=‘0 0 60 60’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cg fill=‘none’ fill-rule=‘evenodd’%3E%3Cg fill=’%23ffffff’ fill-opacity=‘0.04’%3E%3Cpath d=‘M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z’/%3E%3C/g%3E%3C/g%3E%3C/svg%3E”)}
+.menu-hero-halal{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;font-size:12px;color:rgba(255,255,255,0.9);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+.menu-hero h1{font-family:‘Cormorant Garamond’,serif;font-size:36px;color:#fff;font-weight:700;letter-spacing:1px;margin-bottom:4px;text-shadow:0 2px 12px rgba(0,0,0,0.2)}
+.menu-hero-sub{color:rgba(255,255,255,0.75);font-size:13px;font-weight:600}
+.halal-badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:var(–gold);color:var(–dark);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:0.5px}
+
+/* Category bar */
+.cat-wrap{position:sticky;top:0;z-index:40;background:var(–white);border-bottom:1px solid var(–border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.cat-bar{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding:0 4px}
+.cat-bar::-webkit-scrollbar{display:none}
+.cbt{padding:14px 18px;border:none;background:transparent;color:var(–muted);cursor:pointer;font-family:‘Nunito’,sans-serif;font-size:13px;font-weight:700;white-space:nowrap;border-bottom:3px solid transparent;transition:all 0.2s;letter-spacing:0.3px}
+.cbt.on{color:var(–green);border-bottom-color:var(–green)}
+
+/* Menu grid */
+.menu-body{padding:16px;max-width:680px;margin:0 auto;padding-bottom:32px}
+.menu-section-title{font-family:‘Cormorant Garamond’,serif;font-size:22px;color:var(–green2);font-weight:700;margin:20px 0 12px;padding-left:4px;border-left:4px solid var(–gold);padding-left:12px}
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:500px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:360px){.menu-grid{grid-template-columns:1fr}}
+
+.food-card{background:var(–white);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);transition:transform 0.2s;cursor:default;border:1px solid var(–border)}
+.food-card:active{transform:scale(0.98)}
+.food-img{width:100%;height:140px;object-fit:cover;background:#f0ede6;display:flex;align-items:center;justify-content:center;font-size:52px}
+.food-img img{width:100%;height:100%;object-fit:cover}
+.food-body{padding:12px}
+.food-cat-tag{display:inline-block;background:var(–green3);color:var(–green);font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase}
+.food-name{font-family:‘Cormorant Garamond’,serif;font-size:17px;font-weight:700;color:var(–text);margin-bottom:3px;line-height:1.2}
+.food-desc{font-size:11px;color:var(–muted);margin-bottom:8px;line-height:1.4}
+.food-price{font-size:16px;font-weight:800;color:var(–green);display:flex;align-items:center;justify-content:space-between}
+.food-price span{color:var(–muted);font-size:11px;font-weight:600}
+.no-items{text-align:center;padding:60px 20px;color:var(–muted)}
+.no-items-icon{font-size:48px;margin-bottom:12px}
+
+/* Footer */
+.menu-footer{background:var(–green2);color:rgba(255,255,255,0.6);text-align:center;padding:20px;font-size:12px;margin-top:8px}
+.menu-footer b{color:var(–gold)}
+
+/* ═══════════════════════════════════
+ADMIN LOGIN
+═══════════════════════════════════ */
+#v-login{min-height:100vh;background:var(–dark);display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:#0f2a1a;border:1px solid #1e4a2e;border-radius:24px;padding:36px 28px;max-width:360px;width:100%;text-align:center}
+.login-logo{width:72px;height:72px;background:var(–green);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 18px}
+.login-title{font-family:‘Cormorant Garamond’,serif;font-size:26px;color:#fff;margin-bottom:6px}
+.login-sub{color:#5a8a6a;font-size:13px;margin-bottom:24px}
+.pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.pin-dot{width:48px;height:52px;background:#0d1f14;border:2px solid #1e4a2e;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;transition:all 0.2s}
+.pin-dot.filled{border-color:var(–green);background:#1a3a24;color:var(–gold)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.npbtn{padding:16px;background:#0d1f14;border:1px solid #1e4a2e;border-radius:14px;color:#fff;font-family:‘Nunito’,sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.npbtn:active{background:#1a3a24;transform:scale(0.94)}
+.np-clear{background:#1a1a0d;border-color:#3a3010;color:#c0a060}
+.login-hint{color:#2a5a3a;font-size:12px;margin-top:8px}
+.login-err{color:#f08080;font-size:13px;margin-bottom:12px;display:none;background:#2a1010;padding:8px;border-radius:8px}
+
+/* FIRST SETUP */
+#v-setup{min-height:100vh;background:var(–dark);display:flex;align-items:center;justify-content:center;padding:24px}
+.setup-card{background:#0f2a1a;border:1px solid #1e4a2e;border-radius:24px;padding:32px 24px;max-width:400px;width:100%}
+.setup-title{font-family:‘Cormorant Garamond’,serif;font-size:24px;color:#fff;margin-bottom:4px;text-align:center}
+.setup-sub{color:#5a8a6a;font-size:13px;margin-bottom:24px;text-align:center;line-height:1.6}
+
+/* ═══════════════════════════════════
+ADMIN PANEL
+═══════════════════════════════════ */
+#v-admin{min-height:100vh;background:#0a1a0f}
+
+.adm-nav{background:#0d2015;border-bottom:1px solid #1a3a22;padding:0 16px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100;overflow-x:auto;scrollbar-width:none}
+.adm-nav::-webkit-scrollbar{display:none}
+.adm-logo{font-family:‘Cormorant Garamond’,serif;font-size:17px;color:var(–gold);padding:14px 16px 14px 0;white-space:nowrap;flex-shrink:0;letter-spacing:1px}
+.adm-tab{padding:16px 14px;border:none;background:transparent;color:#4a7a5a;cursor:pointer;font-family:‘Nunito’,sans-serif;font-size:13px;font-weight:700;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;transition:all 0.2s}
+.adm-tab.on{color:var(–gold);border-bottom-color:var(–gold)}
+
+.adm-body{max-width:720px;margin:0 auto;padding:20px 16px}
+
+/* Panels */
+.panel{display:none}
+.panel.on{display:block}
+
+/* Cards */
+.acard{background:#0f2a1a;border:1px solid #1a3a22;border-radius:16px;padding:20px;margin-bottom:16px}
+.acard-title{font-size:13px;color:var(–gold);font-weight:800;margin-bottom:16px;letter-spacing:0.5px;text-transform:uppercase}
+
+/* Form */
+.f-label{font-size:11px;color:#4a7a5a;font-weight:700;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.f-inp{width:100%;padding:12px 14px;background:#0a1a0f;border:1px solid #1a3a22;border-radius:10px;color:#e8f5ee;font-family:‘Nunito’,sans-serif;font-size:14px;margin-bottom:12px;outline:none;transition:border-color 0.2s}
+.f-inp:focus{border-color:var(–green)}
+.f-inp::placeholder{color:#2a5a3a}
+select.f-inp{cursor:pointer}
+.f-row{display:flex;gap:10px;flex-wrap:wrap}
+.f-col{flex:1;min-width:110px}
+
+/* Image upload */
+.img-upload{width:100%;height:130px;border:2px dashed #1a3a22;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;margin-bottom:12px;position:relative;overflow:hidden;background:#0a1a0f}
+.img-upload:hover{border-color:var(–green)}
+.img-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-text{color:#2a5a3a;font-size:13px;font-weight:700;text-align:center;pointer-events:none}
+.img-upload-icon{font-size:32px;margin-bottom:6px;pointer-events:none}
+.img-preview{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;border-radius:10px}
+
+/* Buttons */
+.btn-green{padding:12px 24px;background:var(–green);border:none;border-radius:10px;color:#fff;font-family:‘Nunito’,sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all 0.2s}
+.btn-green:active{background:var(–green2)}
+.btn-ghost{padding:11px 18px;background:transparent;border:1px solid #1a3a22;border-radius:10px;color:#4a7a5a;font-family:‘Nunito’,sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.btn-gold{padding:12px 24px;background:var(–gold2);border:none;border-radius:10px;color:#fff;font-family:‘Nunito’,sans-serif;font-weight:800;font-size:14px;cursor:pointer}
+.btn-danger{padding:8px 14px;background:#2a0a0a;border:1px solid #5a1010;border-radius:8px;color:#f08080;font-family:‘Nunito’,sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.btn-edit{padding:8px 14px;background:#0a1a0f;border:1px solid #1a3a22;border-radius:8px;color:#c0d8c8;font-family:‘Nunito’,sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.btn-full{width:100%;justify-content:center}
+
+/* Admin menu list */
+.adm-item{display:flex;align-items:center;gap:12px;padding:12px;background:#0a1a0f;border-radius:12px;margin-bottom:8px;border:1px solid #1a3a22}
+.adm-item-img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#0f2a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
+.adm-item-img img{width:100%;height:100%;object-fit:cover}
+.adm-item-info{flex:1;min-width:0}
+.adm-item-name{font-weight:700;font-size:14px;color:#e8f5ee;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-item-meta{font-size:12px;color:#3a6a4a}
+.adm-item-price{font-weight:800;color:var(–gold);font-size:14px;white-space:nowrap;margin:0 8px}
+.adm-item-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* QR section */
+.qr-wrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.qr-box{background:#fffdf8;border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}
+.qr-rest-name{font-family:‘Cormorant Garamond’,serif;font-size:14px;color:#1a0a00;text-align:center;font-weight:700}
+.qr-side{flex:1;min-width:200px}
+.qr-url{background:#0a1a0f;border:1px solid #1a3a22;border-radius:8px;padding:10px 12px;font-family:monospace;font-size:11px;color:#4a9a6a;word-break:break-all;margin-bottom:10px}
+.qr-tip{background:#0f2a1a;border:1px solid #1a3a22;border-radius:10px;padding:14px;font-size:12px;color:#4a7a5a;line-height:1.9}
+.qr-tip b{color:#c0d8c8}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:#0f2a1a;border:1px solid #1a3a22;border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-size:26px;font-weight:800;color:var(–gold)}
+.stat-lbl{font-size:11px;color:#3a6a4a;margin-top:3px;font-weight:700;text-transform:uppercase}
+
+/* Toast */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-10px);padding:10px 22px;border-radius:12px;font-size:13px;font-weight:700;opacity:0;transition:all 0.3s;z-index:999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#1a4a2a;color:#60e060;border:1px solid #2a7a3a}
+.toast.err{background:#3a1010;color:#f08080;border:1px solid #6a2020}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.food-card{animation:fadeUp 0.3s ease both}
+</style>
+
+</head>
+<body>
+
+<!-- ════════════ CUSTOMER MENU ════════════ -->
+
+<div id="v-menu" class="view">
+  <div class="menu-hero">
+    <div class="menu-hero-halal">🌙 Монгол</div>
+    <h1 id="hero-name">Халал Ресторан</h1>
+    <p class="menu-hero-sub" id="hero-sub">Улаанбаатар хот</p>
+    <div class="halal-badge">☪️ ХАЛАЛ БАТАЛГААТАЙ</div>
+  </div>
+
+  <div class="cat-wrap">
+    <div class="cat-bar" id="cat-bar"></div>
+  </div>
+
+  <div class="menu-body" id="menu-body"></div>
+
+  <div class="menu-footer">
+    <b>Халал Ресторан</b> · Бүх хоол халал гэрчилгээтэй ☪️
+  </div>
+</div>
+
+<!-- ════════════ LOGIN ════════════ -->
+
+<div id="v-login" class="view">
+  <div class="login-card">
+    <div class="login-logo">🔐</div>
+    <h2 class="login-title">Админ нэвтрэх</h2>
+    <p class="login-sub">Нууц кодоо оруулна уу</p>
+    <div class="pin-row" id="pin-row">
+      <div class="pin-dot" id="pd0">·</div>
+      <div class="pin-dot" id="pd1">·</div>
+      <div class="pin-dot" id="pd2">·</div>
+      <div class="pin-dot" id="pd3">·</div>
+    </div>
+    <div class="login-err" id="login-err">❌ Код буруу байна!</div>
+    <div class="numpad">
+      <button class="npbtn" onclick="pinPress('1')">1</button>
+      <button class="npbtn" onclick="pinPress('2')">2</button>
+      <button class="npbtn" onclick="pinPress('3')">3</button>
+      <button class="npbtn" onclick="pinPress('4')">4</button>
+      <button class="npbtn" onclick="pinPress('5')">5</button>
+      <button class="npbtn" onclick="pinPress('6')">6</button>
+      <button class="npbtn" onclick="pinPress('7')">7</button>
+      <button class="npbtn" onclick="pinPress('8')">8</button>
+      <button class="npbtn" onclick="pinPress('9')">9</button>
+      <button class="npbtn np-clear" onclick="pinClear()">↺</button>
+      <button class="npbtn" onclick="pinPress('0')">0</button>
+      <button class="npbtn np-clear" onclick="pinBack()">⌫</button>
+    </div>
+    <div class="login-hint">💡 Анхны нэвтрэх код: <b>1234</b></div>
+  </div>
+</div>
+
+<!-- ════════════ FIRST SETUP ════════════ -->
+
+<div id="v-setup" class="view">
+  <div class="setup-card">
+    <div style="text-align:center;font-size:52px;margin-bottom:16px">🌙</div>
+    <div class="setup-title">Тавтай морил!</div>
+    <p class="setup-sub">Ресторанаа тохируулцгаая.<br>Нэр болон шинэ нууц кодоо оруулна уу.</p>
+
+```
+<label class="f-label">Рестораны нэр</label>
+<input class="f-inp" id="su-name" placeholder="Халал Ресторан"/>
+
+<label class="f-label">Хаяг / Дэлгэрэнгүй</label>
+<input class="f-inp" id="su-sub" placeholder="Улаанбаатар хот, 1-р хороо"/>
+
+<label class="f-label">Шинэ 4 оронтой код</label>
+<div style="display:flex;gap:10px">
+  <input class="f-inp" id="su-c1" type="password" maxlength="6" placeholder="Шинэ код" style="flex:1"/>
+  <input class="f-inp" id="su-c2" type="password" maxlength="6" placeholder="Давтах" style="flex:1"/>
+</div>
+<button class="btn-green btn-full" onclick="doFirstSetup()" style="padding:14px;font-size:15px">✓ Эхлэх</button>
+<div id="su-err" style="color:#f08080;font-size:13px;margin-top:10px;text-align:center;display:none"></div>
+```
+
+  </div>
+</div>
+
+<!-- ════════════ ADMIN PANEL ════════════ -->
+
+<div id="v-admin" class="view">
+  <nav class="adm-nav">
+    <div class="adm-logo">☪️ ADMIN</div>
+    <button class="adm-tab on"  id="tab-menu"     onclick="tab('menu')">🍜 Цэс</button>
+    <button class="adm-tab"     id="tab-qr"       onclick="tab('qr')">📱 QR Код</button>
+    <button class="adm-tab"     id="tab-settings" onclick="tab('settings')">⚙️ Тохиргоо</button>
+    <button class="adm-tab"     id="tab-logout"   onclick="logout()" style="margin-left:auto;color:#5a3a3a">Гарах</button>
+  </nav>
+
+  <div class="adm-body">
+
+```
+<!-- MENU PANEL -->
+<div class="panel on" id="panel-menu">
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="st-items">0</div><div class="stat-lbl">Нийт хоол</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-cats">0</div><div class="stat-lbl">Ангилал</div></div>
+  </div>
+
+  <!-- ADD/EDIT FORM -->
+  <div class="acard" id="form-card">
+    <div class="acard-title" id="form-title-lbl">➕ Шинэ хоол нэмэх</div>
+    <input type="hidden" id="f-id"/>
+
+    <!-- Image upload -->
+    <label class="f-label">Хоолны зураг</label>
+    <div class="img-upload" id="img-upload-zone" onclick="document.getElementById('img-file').click()">
+      <input type="file" id="img-file" accept="image/*" onchange="handleImg(this)" style="display:none"/>
+      <div class="img-upload-icon" id="upload-icon">📷</div>
+      <div class="img-upload-text" id="upload-text">Зураг сонгоно уу<br><span style="font-size:11px;color:#1a4a2a">JPG, PNG • Дарж сонгох</span></div>
+      <img id="img-preview-el" class="img-preview" style="display:none"/>
+    </div>
+
+    <div class="f-row">
+      <div style="width:62px">
+        <label class="f-label">Emoji</label>
+        <input class="f-inp" id="f-emoji" value="🍽️" style="text-align:center;font-size:20px;padding:8px"/>
+      </div>
+      <div class="f-col" style="flex:2">
+        <label class="f-label">Хоолны нэр *</label>
+        <input class="f-inp" id="f-name" placeholder="Хуушуур"/>
+      </div>
+      <div class="f-col">
+        <label class="f-label">Үнэ ₮ *</label>
+        <input class="f-inp" id="f-price" type="number" placeholder="8000"/>
+      </div>
+    </div>
+    <div class="f-row">
+      <div class="f-col">
+        <label class="f-label">Тайлбар</label>
+        <input class="f-inp" id="f-desc" placeholder="Товч тайлбар"/>
+      </div>
+      <div style="width:150px">
+        <label class="f-label">Ангилал</label>
+        <select class="f-inp" id="f-cat">
+          <option>Үндсэн хоол</option>
+          <option>Уух зүйл</option>
+          <option>Салат</option>
+          <option>Десерт</option>
+          <option>Хажуугийн хоол</option>
+          <option>Бусад</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-green" onclick="saveItem()">✓ Хадгалах</button>
+      <button class="btn-ghost" id="cancel-btn" onclick="cancelEdit()" style="display:none">✕ Болих</button>
+      <button class="btn-ghost" onclick="clearImg()" style="margin-left:auto;font-size:12px">🗑 Зураг устгах</button>
+    </div>
+  </div>
+
+  <!-- ITEMS LIST -->
+  <div class="acard">
+    <div class="acard-title">📋 Цэсний жагсаалт</div>
+    <div id="admin-list"></div>
+  </div>
+</div>
+
+<!-- QR PANEL -->
+<div class="panel" id="panel-qr">
+  <div class="acard">
+    <div class="acard-title">📱 QR Код — Бүх ширээнд байрлуулна</div>
+    <div class="qr-wrap">
+      <div class="qr-box">
+        <div id="qr-el"></div>
+        <div class="qr-rest-name" id="qr-rest-name">Халал Ресторан</div>
+      </div>
+      <div class="qr-side">
+        <div style="font-size:12px;color:#3a6a4a;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Цэсний холбоос</div>
+        <div class="qr-url" id="qr-url-show">—</div>
+        <button class="btn-green btn-full" onclick="copyUrl()" style="margin-bottom:10px;font-size:13px">🔗 Холбоосыг хуулах</button>
+        <div class="qr-tip">
+          <b>Яаж ашиглах?</b><br>
+          📌 QR кодыг хэвлэж <b>ширээн дээр тавина</b><br>
+          📱 Үйлчлүүлэгч гар утасны камераар <b>уншина</b><br>
+          ✅ Цэс <b>шууд нээгдэнэ</b> — апп татахгүй!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acard">
+    <div class="acard-title">🌐 Сайтын URL оруулах</div>
+    <div style="font-size:12px;color:#3a6a4a;margin-bottom:10px;line-height:1.6">Netlify-д байршуулсны дараа гарсан холбоосыг доор оруулна. QR код автоматаар шинэчлэгдэнэ.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input class="f-inp" id="site-url-inp" placeholder="https://halal-restaurant.netlify.app" style="flex:1;min-width:200px;margin:0"/>
+      <button class="btn-gold" onclick="saveUrl()">Хадгалах</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="panel" id="panel-settings">
+  <div class="acard">
+    <div class="acard-title">🏪 Рестораны мэдээлэл</div>
+    <label class="f-label">Рестораны нэр</label>
+    <input class="f-inp" id="ss-name" placeholder="Халал Ресторан"/>
+    <label class="f-label">Хаяг / Ажиллах цаг</label>
+    <input class="f-inp" id="ss-sub" placeholder="Улаанбаатар, 10:00 – 22:00"/>
+    <button class="btn-green" onclick="saveRestInfo()">✓ Хадгалах</button>
+  </div>
+
+  <div class="acard">
+    <div class="acard-title">🔐 Нууц кодыг өөрчлөх</div>
+    <div class="f-row">
+      <div class="f-col">
+        <label class="f-label">Шинэ код</label>
+        <input class="f-inp" id="ss-c1" type="password" maxlength="6" placeholder="Шинэ код"/>
+      </div>
+      <div class="f-col">
+        <label class="f-label">Давтах</label>
+        <input class="f-inp" id="ss-c2" type="password" maxlength="6" placeholder="Давтах"/>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="changeCode()">🔐 Код өөрчлөх</button>
+  </div>
+
+  <div class="acard">
+    <div class="acard-title" style="color:#f08080">⚠️ Аюултай бүс</div>
+    <button class="btn-danger" onclick="resetAll()">🗑 Бүгдийг арилгаж дахин тохируулах</button>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const ls = {
+  get: k => { try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } },
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+  del: k => localStorage.removeItem(k),
+};
+function show(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} on`;
+  setTimeout(()=>t.className='toast',2500);
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let MENU=[], CFG={code:'1234',name:'Халал Ресторан',sub:'Улаанбаатар хот',siteUrl:'',firstTime:true};
+let curCat='Бүгд', imgData='', pinVal='';
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  MENU = ls.get('hl_menu') || defaultMenu();
+  CFG  = ls.get('hl_cfg')  || CFG;
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('admin')==='1'){
+    document.body.style.background='#0a1a0f';
+    if(sessionStorage.getItem('admin_ok')==='1') bootAdmin();
+    else show('login');
+  } else {
+    bootMenu();
+  }
+});
+
+// ─── CUSTOMER MENU ────────────────────────────────────────────────────────────
+function bootMenu(){
+  document.getElementById('hero-name').textContent = CFG.name||'Халал Ресторан';
+  document.getElementById('hero-sub').textContent  = CFG.sub||'Улаанбаатар хот';
+  show('menu');
+  renderMenu();
+}
+
+function renderMenu(){
+  const cats=['Бүгд',...new Set(MENU.map(i=>i.cat))];
+  // Cat bar
+  document.getElementById('cat-bar').innerHTML=cats.map(c=>
+    `<button class="cbt${c===curCat?' on':''}" onclick="setCat('${c}')">${c}</button>`
+  ).join('');
+
+  const items = curCat==='Бүгд' ? MENU : MENU.filter(i=>i.cat===curCat);
+  const body  = document.getElementById('menu-body');
+
+  if(!items.length){
+    body.innerHTML=`<div class="no-items"><div class="no-items-icon">🍽️</div><div style="font-weight:700">Хоол байхгүй байна</div></div>`;
+    return;
+  }
+
+  // Group by category
+  if(curCat==='Бүгд'){
+    const grouped={};
+    MENU.forEach(i=>{ if(!grouped[i.cat]) grouped[i.cat]=[]; grouped[i.cat].push(i); });
+    body.innerHTML = Object.entries(grouped).map(([cat,citems])=>`
+      <div class="menu-section-title">${cat}</div>
+      <div class="menu-grid">${citems.map(foodCard).join('')}</div>
+    `).join('');
+  } else {
+    body.innerHTML = `<div class="menu-grid">${items.map(foodCard).join('')}</div>`;
+  }
+}
+
+function foodCard(item){
+  const imgContent = item.img
+    ? `<div class="food-img"><img src="${item.img}" alt="${item.name}" loading="lazy"/></div>`
+    : `<div class="food-img">${item.emoji||'🍽️'}</div>`;
+  return `<div class="food-card" style="animation-delay:${Math.random()*0.2}s">
+    ${imgContent}
+    <div class="food-body">
+      <div class="food-cat-tag">${item.cat}</div>
+      <div class="food-name">${item.name}</div>
+      ${item.desc?`<div class="food-desc">${item.desc}</div>`:''}
+      <div class="food-price">${Number(item.price).toLocaleString()}₮ <span>халал ☪️</span></div>
+    </div>
+  </div>`;
+}
+
+function setCat(c){ curCat=c; renderMenu(); }
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function pinPress(n){
+  if(pinVal.length>=4) return;
+  pinVal+=n;
+  updatePinUI();
+  if(pinVal.length===4) setTimeout(checkPin,300);
+}
+function pinBack(){ pinVal=pinVal.slice(0,-1); updatePinUI(); }
+function pinClear(){ pinVal=''; updatePinUI(); document.getElementById('login-err').style.display='none'; }
+function updatePinUI(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.textContent=i<pinVal.length?'●':'·';
+    d.classList.toggle('filled',i<pinVal.length);
+  }
+}
+function checkPin(){
+  if(pinVal===CFG.code){
+    sessionStorage.setItem('admin_ok','1');
+    pinVal=''; updatePinUI();
+    if(CFG.firstTime) show('setup');
+    else bootAdmin();
+  } else {
+    document.getElementById('login-err').style.display='block';
+    pinVal=''; updatePinUI();
+  }
+}
+
+// ─── FIRST SETUP ──────────────────────────────────────────────────────────────
+function doFirstSetup(){
+  const name=document.getElementById('su-name').value.trim();
+  const sub =document.getElementById('su-sub').value.trim();
+  const c1  =document.getElementById('su-c1').value;
+  const c2  =document.getElementById('su-c2').value;
+  const err =document.getElementById('su-err');
+  err.style.display='none';
+  if(!name){err.textContent='⚠️ Рестораны нэрийг оруулна уу';err.style.display='block';return;}
+  if(c1.length<4){err.textContent='⚠️ Код дор хаяж 4 оронтой байх ёстой';err.style.display='block';return;}
+  if(c1!==c2){err.textContent='⚠️ Код таарахгүй байна';err.style.display='block';return;}
+  CFG={...CFG,name,sub,code:c1,firstTime:false};
+  ls.set('hl_cfg',CFG);
+  bootAdmin();
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+function bootAdmin(){
+  document.getElementById('ss-name').value=CFG.name||'';
+  document.getElementById('ss-sub').value=CFG.sub||'';
+  document.getElementById('site-url-inp').value=CFG.siteUrl||'';
+  show('admin');
+  renderAdminList();
+  renderQR();
+}
+
+function tab(name){
+  ['menu','qr','settings'].forEach(p=>{
+    document.getElementById('panel-'+p).classList.toggle('on',p===name);
+    document.getElementById('tab-'+p)?.classList.toggle('on',p===name);
+  });
+  if(name==='qr') renderQR();
+}
+
+function logout(){
+  sessionStorage.removeItem('admin_ok');
+  show('login');
+}
+
+// ─── MENU EDITOR ──────────────────────────────────────────────────────────────
+function defaultMenu(){
+  return [
+    {id:'1',emoji:'🥟',name:'Хуушуур',price:8000,cat:'Үндсэн хоол',desc:'Монгол уламжлалт',img:''},
+    {id:'2',emoji:'🥡',name:'Бууз',price:12000,cat:'Үндсэн хоол',desc:'Уураар жигнэсэн',img:''},
+    {id:'3',emoji:'🍜',name:'Гурилтай шөл',price:9000,cat:'Үндсэн хоол',desc:'Мах шөлтэй',img:''},
+    {id:'4',emoji:'🍵',name:'Цай',price:2000,cat:'Уух зүйл',desc:'Сүүтэй цай',img:''},
+    {id:'5',emoji:'🍋',name:'Нимбэгний шүүс',price:4000,cat:'Уух зүйл',desc:'Хүйтэн ундаа',img:''},
+    {id:'6',emoji:'🍮',name:'Цагаан идээ',price:5000,cat:'Десерт',desc:'Амттан',img:''},
+  ];
+}
+
+function renderAdminList(){
+  MENU=ls.get('hl_menu')||defaultMenu();
+  document.getElementById('st-items').textContent=MENU.length;
+  document.getElementById('st-cats').textContent=[...new Set(MENU.map(i=>i.cat))].length;
+  const el=document.getElementById('admin-list');
+  if(!MENU.length){
+    el.innerHTML='<div style="color:#2a5a3a;text-align:center;padding:20px;font-size:13px">Цэс хоосон байна. Хоол нэмнэ үү.</div>';
+    return;
+  }
+  el.innerHTML=MENU.map(item=>`
+    <div class="adm-item">
+      <div class="adm-item-img">
+        ${item.img?`<img src="${item.img}" alt="${item.name}"/>`:(item.emoji||'🍽️')}
+      </div>
+      <div class="adm-item-info">
+        <div class="adm-item-name">${item.name}</div>
+        <div class="adm-item-meta">${item.cat}${item.desc?' · '+item.desc:''}</div>
+      </div>
+      <div class="adm-item-price">${Number(item.price).toLocaleString()}₮</div>
+      <div class="adm-item-actions">
+        <button class="btn-edit" onclick="editItem('${item.id}')">✏️</button>
+        <button class="btn-danger" onclick="delItem('${item.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+// Image handling
+function handleImg(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    imgData=e.target.result;
+    const prev=document.getElementById('img-preview-el');
+    prev.src=imgData; prev.style.display='block';
+    document.getElementById('upload-icon').style.display='none';
+    document.getElementById('upload-text').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+function clearImg(){
+  imgData='';
+  document.getElementById('img-preview-el').style.display='none';
+  document.getElementById('img-preview-el').src='';
+  document.getElementById('upload-icon').style.display='block';
+  document.getElementById('upload-text').style.display='block';
+  document.getElementById('img-file').value='';
+}
+
+function editItem(id){
+  const it=MENU.find(i=>i.id==id); if(!it) return;
+  document.getElementById('f-id').value=id;
+  document.getElementById('f-emoji').value=it.emoji||'🍽️';
+  document.getElementById('f-name').value=it.name;
+  document.getElementById('f-price').value=it.price;
+  document.getElementById('f-desc').value=it.desc||'';
+  document.getElementById('f-cat').value=it.cat;
+  // Image
+  imgData=it.img||'';
+  if(imgData){
+    const prev=document.getElementById('img-preview-el');
+    prev.src=imgData; prev.style.display='block';
+    document.getElementById('upload-icon').style.display='none';
+    document.getElementById('upload-text').style.display='none';
+  } else { clearImg(); }
+  document.getElementById('form-title-lbl').textContent='✏️ Хоол засварлах';
+  document.getElementById('cancel-btn').style.display='inline-block';
+  document.getElementById('form-card').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelEdit(){
+  document.getElementById('f-id').value='';
+  document.getElementById('f-emoji').value='🍽️';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-price').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-cat').value='Үндсэн хоол';
+  document.getElementById('form-title-lbl').textContent='➕ Шинэ хоол нэмэх';
+  document.getElementById('cancel-btn').style.display='none';
+  clearImg();
+}
+
+function saveItem(){
+  const name =document.getElementById('f-name').value.trim();
+  const price=document.getElementById('f-price').value;
+  if(!name||!price){toast('⚠️ Нэр болон үнэ заавал оруулна!','err');return;}
+  const editId=document.getElementById('f-id').value;
+  const item={
+    id: editId||Date.now().toString(),
+    emoji: document.getElementById('f-emoji').value||'🍽️',
+    name, price:Number(price),
+    desc: document.getElementById('f-desc').value.trim(),
+    cat:  document.getElementById('f-cat').value,
+    img:  imgData||'',
+  };
+  if(editId) MENU=MENU.map(i=>i.id==editId?item:i);
+  else MENU.push(item);
+  ls.set('hl_menu',MENU);
+  renderAdminList();
+  cancelEdit();
+  toast('✅ Хадгалагдлаа!');
+}
+
+function delItem(id){
+  if(!confirm('Устгах уу?')) return;
+  MENU=MENU.filter(i=>i.id!=id);
+  ls.set('hl_menu',MENU);
+  renderAdminList();
+  toast('🗑 Устгагдлаа');
+}
+
+// ─── QR ───────────────────────────────────────────────────────────────────────
+function renderQR(){
+  const url=(CFG.siteUrl||window.location.href.split('?')[0]).trim();
+  document.getElementById('qr-url-show').textContent=url;
+  document.getElementById('qr-rest-name').textContent=CFG.name;
+  const el=document.getElementById('qr-el');
+  el.innerHTML='';
+  if(window.QRCode){
+    new QRCode(el,{text:url,width:180,height:180,colorDark:'#0d2015',colorLight:'#fffdf8',correctLevel:QRCode.CorrectLevel.M});
+  }
+}
+
+function saveUrl(){
+  CFG.siteUrl=document.getElementById('site-url-inp').value.trim();
+  ls.set('hl_cfg',CFG);
+  renderQR();
+  toast('✅ URL хадгалагдлаа!');
+}
+
+function copyUrl(){
+  const url=document.getElementById('qr-url-show').textContent;
+  navigator.clipboard.writeText(url).then(()=>toast('✅ Хуулагдлаа!'));
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function saveRestInfo(){
+  CFG.name=document.getElementById('ss-name').value.trim()||CFG.name;
+  CFG.sub =document.getElementById('ss-sub').value.trim();
+  ls.set('hl_cfg',CFG);
+  renderQR();
+  toast('✅ Хадгалагдлаа!');
+}
+
+function changeCode(){
+  const c1=document.getElementById('ss-c1').value;
+  const c2=document.getElementById('ss-c2').value;
+  if(c1.length<4){toast('⚠️ Дор хаяж 4 оронтой','err');return;}
+  if(c1!==c2){toast('⚠️ Код таарахгүй','err');return;}
+  CFG.code=c1; ls.set('hl_cfg',CFG);
+  document.getElementById('ss-c1').value='';
+  document.getElementById('ss-c2').value='';
+  toast('✅ Код өөрчлөгдлөө!');
+}
+
+function resetAll(){
+  if(!confirm('Бүх мэдээлэл устах уу?')) return;
+  ls.del('hl_cfg'); ls.del('hl_menu');
+  sessionStorage.removeItem('admin_ok');
+  location.reload();
+}
+</script>
+
+</body>
+</html>
